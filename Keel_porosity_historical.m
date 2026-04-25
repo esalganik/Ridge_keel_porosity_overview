@@ -178,28 +178,34 @@ fig = figure; hold on; box on
 yline(0, '--', 'Color', [0.8 0.8 0.8], 'LineWidth', 1, 'HandleVisibility', 'off');
 
 % ── 1. Compute per-bin statistics (single pass; reused for plot + table) ─────
-binEdges = [0 45 170 210 250 290 330 365];
-minN     = 3;
-xPad     = 4;
-binGap   = 2;
-nBins    = numel(binEdges) - 1;
+t0 = datetime(2019,seasonStartMonth,seasonStartDay);
+tBinEdges = [datetime(2019,8,15), ...
+             datetime(2019,9:12,1), ...
+             datetime(2020,1:8,1), ...
+             datetime(2020,9,1)]; 
+binEdges = days(tBinEdges - t0);
+minN  = 2;
+gap   = 1;   % visual gap between monthly boxes, days
+nBins = numel(binEdges) - 1;
 
 binStats = struct('valid', false, 'label', '', 'xc', NaN, ...
-                  'x1', NaN, 'x2', NaN, 'med', NaN, 'q1', NaN, 'q3', NaN);
+                  'x1', NaN, 'x2', NaN, 'med', NaN, ...
+                  'q1', NaN, 'q3', NaN, 'N', 0);
 binStats = repmat(binStats, nBins, 1);
 
 for k = 1:nBins
     inBin = T.xseason >= binEdges(k) & T.xseason < binEdges(k+1);
     if sum(inBin) < minN, continue; end
+    binStats(k).N = sum(inBin);
 
     q = quantile(T.pk(inBin), [0.25 0.75]);
     xc = mean(binEdges(k:k+1));
 
     binStats(k).valid = true;
-    binStats(k).label = datestr(datetime(2019, 8, 15) + days(xc), 'mmm');
-    binStats(k).xc    = xc;
-    binStats(k).x1    = max(min(T.xseason(inBin)) - xPad, binEdges(k)   + binGap);
-    binStats(k).x2    = min(max(T.xseason(inBin)) + xPad, binEdges(k+1) - binGap);
+binStats(k).label = datestr(tBinEdges(k), 'mmm');
+binStats(k).xc    = xc;
+binStats(k).x1    = binEdges(k)   + gap;
+binStats(k).x2    = binEdges(k+1) - gap;
     binStats(k).med   = median(T.pk(inBin), 'omitnan');
     binStats(k).q1    = q(1);
     binStats(k).q3    = q(2);
@@ -243,30 +249,40 @@ labels  = {binStats(valid).label};
 medvals = [binStats(valid).med];
 q1vals  = [binStats(valid).q1];
 q3vals  = [binStats(valid).q3];
+Nvals   = [binStats(valid).N];
 
-x0  = 50;    y0 = 0.11;   dy = 0.015;
-col = [0, 30, 55];  % x offsets: Month | Median | IQR
+x0  = 60;    y0 = 0.13;   dy = 0.015;
+col = [0, 30, 55, 100];  % Month | p_k | IQR | N
 
 text(x0+col(1), y0, 'Month', 'FontWeight', 'bold', 'FontSize', 8);
-text(x0+col(2), y0, '{\it p_k}',   'FontWeight', 'bold', 'FontSize', 8);
+text(x0+col(2), y0, '{\it p_k}', 'FontWeight', 'bold', 'FontSize', 8);
 text(x0+col(3), y0, '[IQR]', 'FontWeight', 'bold', 'FontSize', 8);
+text(x0+col(4), y0, 'N', 'FontWeight', 'bold', 'FontSize', 8);
 
 for i = 1:numel(labels)
     y = y0 - i*dy;
-    text(x0+col(1), y, labels{i},                                    'FontSize', 8);
-    text(x0+col(2), y, sprintf('%.2f', medvals(i)),                  'FontSize', 8);
-    text(x0+col(3), y, sprintf('[%.2f %.2f]', q1vals(i), q3vals(i)), 'FontSize', 8);
+text(x0+col(1), y, labels{i}, 'FontSize', 8);
+text(x0+col(2), y, sprintf('%.2f', medvals(i)), 'FontSize', 8);
+text(x0+col(3), y, sprintf('[%.2f %.2f]', q1vals(i), q3vals(i)), 'FontSize', 8);
+text(x0+col(4), y, sprintf('%d', Nvals(i)), 'FontSize', 8);
 end
 
 % ── 5. Axes formatting & export ───────────────────────────────────────────────
-xticks(0:30:360);
-xticklabels({'Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'});
-xlim([0 365]);  ylim([-0.02 0.35]);
+% axis
+tTicks = [datetime(2019,9:12,1), ...
+          datetime(2020,1:9,1)];   % includes 1 Sep at the end
+
+xTicks = days(tTicks - t0);
+
+xticks(xTicks)
+xticklabels({'Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'})
+xlim([0 days(datetime(2020,9,1)-t0)])
+ylim([-0.02 0.35])
 
 xlabel('Seasonal day');
 ylabel('Keel macroporosity, {\it p_k}')
-leg = legend('Location', 'northwest', 'NumColumns', 2, 'FontSize', 7.5, 'Box', 'off');
-leg.ItemTokenSize = [30*0.3, 18*0.2];
+leg = legend('Location', 'northwest', 'NumColumns', 2, 'FontSize', 7.0, 'Box', 'off');
+leg.ItemTokenSize = [30*0.25, 18*0.2];
 
 fig.Units    = 'inches';
 fig.Position = [3 3 8 5];

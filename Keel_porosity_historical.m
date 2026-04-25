@@ -11,32 +11,90 @@ iceSeasonDay = @(t) days(t - datetime( ...
 T = table;
 
 % Datasets
-% Guzenko et al., 2025
-meta.author = "Guzenko et al., 2025";
-meta.name = "Formation and Consolidation of a First-year Ridge Based on Nine Months of Observations at the Drifting Station 'North Pole-41'";
-meta.url = "https://doi.org/10.17736/ijope.2025.jc943";
+% Hoyland 2002
+meta.author = "Høyland, 2002";
+meta.name = "Simulations of the consolidation process in first-year sea ice ridges";
+meta.url = "https://doi.org/10.1016/S0165-232X(02)00002-2";
 
-t  = datetime({'15-May-2020','05-Jul-2020','01-Aug-2020','15-May-2020','05-Jul-2020','01-Aug-2020','15-May-2020','05-Jul-2020','01-Aug-2020'});
-hc = [2.45 2.65 2.34 2.58 2.95 2.64 2.29 2.75 2.46];           % consolidated layer thickness, m
-cl_hi = [1.4 1.5 1.5 1.5 1.6 1.7 1.3 1.5 1.6];                 % CL / level ice thickness
-hi = hc ./ cl_hi;                                               % derived level ice thickness, m
-hk = [2.81 2.89 2.17 3.75 3.65 2.34 3.82 3.43 2.30];           % keel thickness / draft, m
-pr = [0.020 0.022 0.000 0.121 0.302 0.000 0.111 0.066 0.000];  % rubble porosity
-pk = pr .* (hk - hc) ./ hk;                                     % keel-average porosity incl. CL
+t  = datetime({'02-Mar-1998','10-Mar-1999','25-Feb-1999'});
+hi = [0.95 0.70 0.47];       % initial level ice thickness, m
+hc = [1.19 0.91 0.50];       % initial consolidated layer thickness, m
+hk = [4.4 5.0 4.5];          % keel depth, m
+pr = [0.325 0.35 0.38];      % rubble porosity
+pk = pr .* (hk - hc) ./ hk;  % keel-average porosity incl. CL
 
 T = addData(T,t,pk,meta);
 
-% Guzenko et al., 2026
-meta.author = "Guzenko et al., 2026";
-meta.name = "Morphometry and internal structure of large ice ridges and stamukhas in the Kara, Laptev and East Siberian seas";
-meta.url = "https://doi.org/10.1016/j.joes.2026.03.004";
+% Bonnemaire et al., 2003
+meta.author = "Bonnemaire et al., 2003";
+meta.name = "Barents Sea ridge";
+meta.url = "https://poac.com/PapersOnline.html";
 
-t  = datetime({'13-Apr-2014','12-Apr-2015','28-Apr-2014','02-Jun-2015','13-May-2014','15-May-2015','23-May-2014','07-May-2015','30-Mar-2017','25-Mar-2017'},'InputFormat','dd-MMM-yyyy');
-hi = [0.89 0.94 1.51 1.38 0.97 1.15 1.46 1.55 1.76 1.65];  % level ice thickness, m
-hc = [1.54 1.39 1.96 2.18 1.69 2.16 3.02 2.61 2.51 2.38];  % consolidated layer thickness, m
-pr = [0.24 0.31 0.28 0.25 0.36 0.26 0.27 0.25 0.29 0.20];  % rubble porosity
-hk = [5.12 4.88 6.21 6.80 5.02 5.45 5.68 5.71 4.33 5.58];  % keel thickness / draft, m
-pk = pr .* (hk - hc) ./ hk;                                 % keel-average porosity incl. CL
+t  = datetime('06-May-2002');
+hi = 1.35;    % level ice thickness, m
+hc = 1.90;    % consolidated layer thickness, m
+hk = 15.0;    % keel depth, m
+pr = 0.297;   % rubble porosity
+pt = 0.24;    % total ridge porosity
+ps = 0.153;   % sail porosity
+pk = pr .* (hk - hc) ./ hk;  % keel-average porosity
+
+T = addData(T,t,pk,meta);
+
+% Kharitonov, 2005
+meta.author = "Kharitonov, 2005";
+meta.name = "Peculiarities of Fractional Composition of the Pechora Sea First-Year Ridges";
+meta.url = "https://poac.com/PapersOnline.html";
+
+t  = datetime('15-Apr-1999');  % measurement period: April 1999
+hi = 0.70;                     % level ice thickness, m
+hc = 0.54;                     % refrozen layer, used as CL analogue, m
+hk = 6.09;                     % mean keel depth, m
+pk = 0.17;                     % total ridge / bulk porosity
+
+T = addData(T,t,pk,meta);
+
+% Kharitonov & Morev, 2005
+meta.author = "Kharitonov & Morev, 2005";
+meta.name = "Central Arctic ridge observations";
+meta.url = "https://poac.com/PapersOnline.html";
+
+t  = repmat(datetime(2004,9,6),3,1);  % 5-9 Sep 2004, midpoint
+pk = [0.12 0.16 0.15];               % void fraction in keel
+
+T = addData(T,t,pk,meta);
+
+% Strub-Klein et al., 2009
+meta.author = "Strub-Klein et al., 2009";
+meta.name = "Ridge porosity observations";
+meta.url = "https://poac.com/PapersOnline.html";
+
+t  = [datetime(2008,5,1); datetime(2008,9,7)];
+pk = [0.275; 0.1157];  % keel macroporosity
+
+T = addData(T,t,pk,meta);
+
+% Kharitonov, 2012
+meta.author = "Kharitonov, 2012";
+meta.name = "Internal structure and porosity of ice ridges investigated at «North Pole‐38» drifting station";
+meta.url = "https://doi.org/10.1016/j.coldregions.2012.05.018";
+
+t  = datetime({'08-Apr-2011','24-May-2011','04-Jun-2011'});  % midpoints of measurement periods
+hi = [1.02 1.7 1.7];         % level ice thickness, m; R1 range 0.86-1.18, mean approximated as 1.02
+hc = [3.00 5.4 1.8];         % consolidated layer thickness, m
+hk = [6.67 12.65 9.40];      % mean keel depth, m
+pk = [0.18 0.08 0.09];       % keel porosity incl. CL
+pr = hk ./ (hk - hc) .* pk;  % derived rubble porosity
+
+T = addData(T,t,pk,meta);
+
+% Sand et al., 2015
+meta.author = "Sand et al., 2015";
+meta.name = "ColdTech field data";
+meta.url = "https://poac.com/PapersOnline.html";
+
+t  = datetime({'19-Mar-2011';'29-Mar-2011';'14-Mar-2012';'27-Apr-2013';'28-Apr-2013';'29-Apr-2013'});
+pk = [0.11; 0.13; 0.06; 0.04; 0.14; 0.16];  % keel macroporosity / void fraction
 
 T = addData(T,t,pk,meta);
 
@@ -67,20 +125,6 @@ pr = [0.11 0.10 0.25 0.16 0.22 0.27];  % rubble macroporosity
 
 T = addData(T,t,pk,meta);
 
-% Hoyland 2002
-meta.author = "Høyland, 2002";
-meta.name = "Simulations of the consolidation process in first-year sea ice ridges";
-meta.url = "https://doi.org/10.1016/S0165-232X(02)00002-2";
-
-t  = datetime({'02-Mar-1998','10-Mar-1999','25-Feb-1999'});
-hi = [0.95 0.70 0.47];       % initial level ice thickness, m
-hc = [1.19 0.91 0.50];       % initial consolidated layer thickness, m
-hk = [4.4 5.0 4.5];          % keel depth, m
-pr = [0.325 0.35 0.38];      % rubble porosity
-pk = pr .* (hk - hc) ./ hk;  % keel-average porosity incl. CL
-
-T = addData(T,t,pk,meta);
-
 % Salganik et al., 2023
 meta.author = "Salganik et al., 2023";
 meta.name = "Different mechanisms of Arctic first-year sea-ice ridge consolidation observed during the MOSAiC expedition";
@@ -95,76 +139,32 @@ pk = [0.22 0.03];  % total keel macroporosity incl. CL; summer all-transect mean
 
 T = addData(T,t,pk,meta);
 
-% Kharitonov, 2012
-meta.author = "Kharitonov, 2012";
-meta.name = "Internal structure and porosity of ice ridges investigated at «North Pole‐38» drifting station";
-meta.url = "https://doi.org/10.1016/j.coldregions.2012.05.018";
+% Guzenko et al., 2025
+meta.author = "Guzenko et al., 2025";
+meta.name = "Formation and Consolidation of a First-year Ridge Based on Nine Months of Observations at the Drifting Station 'North Pole-41'";
+meta.url = "https://doi.org/10.17736/ijope.2025.jc943";
 
-t  = datetime({'08-Apr-2011','24-May-2011','04-Jun-2011'});  % midpoints of measurement periods
-hi = [1.02 1.7 1.7];         % level ice thickness, m; R1 range 0.86-1.18, mean approximated as 1.02
-hc = [3.00 5.4 1.8];         % consolidated layer thickness, m
-hk = [6.67 12.65 9.40];      % mean keel depth, m
-pk = [0.18 0.08 0.09];       % keel porosity incl. CL
-pr = hk ./ (hk - hc) .* pk;  % derived rubble porosity
-
-T = addData(T,t,pk,meta);
-
-% Kharitonov, 2005
-meta.author = "Kharitonov, 2005";
-meta.name = "Peculiarities of Fractional Composition of the Pechora Sea First-Year Ridges";
-meta.url = "https://poac.com/PapersOnline.html";
-
-t  = datetime('15-Apr-1999');  % measurement period: April 1999
-hi = 0.70;                     % level ice thickness, m
-hc = 0.54;                     % refrozen layer, used as CL analogue, m
-hk = 6.09;                     % mean keel depth, m
-pk = 0.17;                     % total ridge / bulk porosity
+t  = datetime({'15-May-2020','05-Jul-2020','01-Aug-2020','15-May-2020','05-Jul-2020','01-Aug-2020','15-May-2020','05-Jul-2020','01-Aug-2020'});
+hc = [2.45 2.65 2.34 2.58 2.95 2.64 2.29 2.75 2.46];           % consolidated layer thickness, m
+cl_hi = [1.4 1.5 1.5 1.5 1.6 1.7 1.3 1.5 1.6];                 % CL / level ice thickness
+hi = hc ./ cl_hi;                                               % derived level ice thickness, m
+hk = [2.81 2.89 2.17 3.75 3.65 2.34 3.82 3.43 2.30];           % keel thickness / draft, m
+pr = [0.020 0.022 0.000 0.121 0.302 0.000 0.111 0.066 0.000];  % rubble porosity
+pk = pr .* (hk - hc) ./ hk;                                     % keel-average porosity incl. CL
 
 T = addData(T,t,pk,meta);
 
-% Bonnemaire et al., 2003
-meta.author = "Bonnemaire et al., 2003";
-meta.name = "Barents Sea ridge";
-meta.url = "https://poac.com/PapersOnline.html";
+% Guzenko et al., 2026
+meta.author = "Guzenko et al., 2026";
+meta.name = "Morphometry and internal structure of large ice ridges and stamukhas in the Kara, Laptev and East Siberian seas";
+meta.url = "https://doi.org/10.1016/j.joes.2026.03.004";
 
-t  = datetime('06-May-2002');
-hi = 1.35;    % level ice thickness, m
-hc = 1.90;    % consolidated layer thickness, m
-hk = 15.0;    % keel depth, m
-pr = 0.297;   % rubble porosity
-pt = 0.24;    % total ridge porosity
-ps = 0.153;   % sail porosity
-pk = pr .* (hk - hc) ./ hk;  % keel-average porosity
-
-T = addData(T,t,pk,meta);
-
-% Strub-Klein et al., 2009
-meta.author = "Strub-Klein et al., 2009";
-meta.name = "Ridge porosity observations";
-meta.url = "https://poac.com/PapersOnline.html";
-
-t  = [datetime(2008,5,1); datetime(2008,9,7)];
-pk = [0.275; 0.1157];  % keel macroporosity
-
-T = addData(T,t,pk,meta);
-
-% Kharitonov & Morev, 2005
-meta.author = "Kharitonov & Morev, 2005";
-meta.name = "Central Arctic ridge observations";
-meta.url = "https://poac.com/PapersOnline.html";
-
-t  = repmat(datetime(2004,9,6),3,1);  % 5-9 Sep 2004, midpoint
-pk = [0.12 0.16 0.15];               % void fraction in keel
-
-T = addData(T,t,pk,meta);
-
-% Sand et al., 2015
-meta.author = "Sand et al., 2015";
-meta.name = "ColdTech field data";
-meta.url = "https://poac.com/PapersOnline.html";
-
-t  = datetime({'19-Mar-2011';'29-Mar-2011';'14-Mar-2012';'27-Apr-2013';'28-Apr-2013';'29-Apr-2013'});
-pk = [0.11; 0.13; 0.06; 0.04; 0.14; 0.16];  % keel macroporosity / void fraction
+t  = datetime({'13-Apr-2014','12-Apr-2015','28-Apr-2014','02-Jun-2015','13-May-2014','15-May-2015','23-May-2014','07-May-2015','30-Mar-2017','25-Mar-2017'},'InputFormat','dd-MMM-yyyy');
+hi = [0.89 0.94 1.51 1.38 0.97 1.15 1.46 1.55 1.76 1.65];  % level ice thickness, m
+hc = [1.54 1.39 1.96 2.18 1.69 2.16 3.02 2.61 2.51 2.38];  % consolidated layer thickness, m
+pr = [0.24 0.31 0.28 0.25 0.36 0.26 0.27 0.25 0.29 0.20];  % rubble porosity
+hk = [5.12 4.88 6.21 6.80 5.02 5.45 5.68 5.71 4.33 5.58];  % keel thickness / draft, m
+pk = pr .* (hk - hc) ./ hk;                                 % keel-average porosity incl. CL
 
 T = addData(T,t,pk,meta);
 
@@ -229,6 +229,7 @@ plot(nan, nan, '-', 'Color', [0.35 0.35 0.35], 'LineWidth', 1.4, ...
 % ── 3. Per-source scatter ─────────────────────────────────────────────────────
 sources  = unique(T.source, 'stable');
 nSources = numel(sources);
+% Requires linspecer from: https://www.mathworks.com/matlabcentral/fileexchange/42673
 C        = linspecer(nSources);
 markers  = {'o','s','d','^','v','>','<','p','h'};
 msz      = 6;

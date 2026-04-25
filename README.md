@@ -23,12 +23,13 @@ This MATLAB script compiles published observations of **sea-ice ridge keel macro
 - Data are grouped into predefined seasonal bins, and for each bin:
   - Median pₖ  
   - Interquartile range (IQR)
-
+  - Number of observations (N)
+    
 - Results are visualized as:
   - Scatter points grouped by source  
   - Horizontal median lines  
   - Shaded IQR envelopes  
-  - Embedded table of seasonal statistics  
+  - Embedded table of monthly statistics (median, IQR, and sample size N)
 
 ### Output
 

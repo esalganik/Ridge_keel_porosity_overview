@@ -16,11 +16,11 @@ meta.author = "Høyland, 2002";
 meta.name = "Simulations of the consolidation process in first-year sea ice ridges";
 meta.url = "https://doi.org/10.1016/S0165-232X(02)00002-2";
 
-t  = datetime({'02-Mar-1998','10-Mar-1999','25-Feb-1999'});
-hi = [0.95 0.70 0.47];       % initial level ice thickness, m
-hc = [1.19 0.91 0.50];       % initial consolidated layer thickness, m
-hk = [4.4 5.0 4.5];          % keel depth, m
-pr = [0.325 0.35 0.38];      % rubble porosity
+t  = datetime({'02-Mar-1998','10-Mar-1999'});
+hi = [0.95 0.70];       % initial level ice thickness, m
+hc = [1.19 0.91];       % initial consolidated layer thickness, m
+hk = [4.4  5.0];          % keel depth, m
+pr = [0.325 0.35];      % rubble porosity
 pk = pr .* (hk - hc) ./ hk;  % keel-average porosity incl. CL
 
 T = addData(T,t,pk,meta);
@@ -184,7 +184,7 @@ tBinEdges = [datetime(2019,8,15), ...
              datetime(2020,1:8,1), ...
              datetime(2020,9,1)]; 
 binEdges = days(tBinEdges - t0);
-minN  = 2;
+minN  = 3;
 gap   = 1;   % visual gap between monthly boxes, days
 nBins = numel(binEdges) - 1;
 

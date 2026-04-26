@@ -355,11 +355,128 @@ figParam.Position = [3 3 10.5 4.5];
 
 % exportgraphics(figParam,'Historical_keel_porosity_parameterization_lines.png','Resolution',300);
 
+%% Figure 2: keel porosity vs time (mean ± std)
+fig = figure; hold on; box on
+
+% ── 0. Reference line ───────────────────────────────────────────────
+yline(0,'--','Color',[0.8 0.8 0.8],'LineWidth',1,'HandleVisibility','off');
+
+% ── 1. Compute per-bin statistics (mean + std) ──────────────────────
+t0 = datetime(2019,seasonStartMonth,seasonStartDay);
+tBinEdges = [datetime(2019,8,15), datetime(2019,9:12,1), datetime(2020,1:8,1), datetime(2020,9,1)];
+binEdges = days(tBinEdges - t0);
+minN  = 3;
+gap   = 1;  % visual gap
+nBins = numel(binEdges)-1;
+
+binStats = struct('valid', false, 'label', '', 'xc', NaN, ...
+                  'x1', NaN, 'x2', NaN, 'mean', NaN, 'std', NaN, 'N', 0);
+binStats = repmat(binStats, nBins, 1);
+
+for k = 1:nBins
+    inBin = T.xseason >= binEdges(k) & T.xseason < binEdges(k+1);
+    if sum(inBin) < minN, continue; end
+    binStats(k).N = sum(inBin);
+
+    binStats(k).mean = mean(T.pk(inBin), 'omitnan');
+    binStats(k).std  = std(T.pk(inBin), 'omitnan');
+    xc = mean(binEdges(k:k+1));
+
+    binStats(k).valid = true;
+    binStats(k).label = datestr(tBinEdges(k), 'mmm');
+    binStats(k).xc    = xc;
+    binStats(k).x1    = binEdges(k)   + gap;
+    binStats(k).x2    = binEdges(k+1) - gap;
+end
+
+% ── 2. Shading ±1σ + mean line ─────────────────────────────────────
+for k = 1:nBins
+    if ~binStats(k).valid, continue; end
+    s = binStats(k);
+    % shading ±1σ
+    fill([s.x1 s.x2 s.x2 s.x1], [s.mean-s.std s.mean-s.std s.mean+s.std s.mean+s.std], ...
+         [0.85 0.85 0.85], 'FaceAlpha',0.25, 'EdgeColor','none', 'HandleVisibility','off');
+    % mean line
+    plot([s.x1 s.x2], [s.mean s.mean], '-', 'Color',[0.35 0.35 0.35], 'LineWidth',1.4, 'HandleVisibility','off');
+end
+plot(nan,nan,'-', 'Color',[0.35 0.35 0.35], 'LineWidth',1.4, 'DisplayName','Seasonal mean (±σ)');
+
+% ── 3. Per-source scatter ─────────────────────────────────────────
+sources  = unique(T.source,'stable');
+nSources = numel(sources);
+C        = linspecer(nSources); % colors
+markers  = {'o','s','d','^','v','>','<','p','h'};
+msz      = 6;
+
+for i = 1:nSources
+    inSrc = T.source == sources(i);
+    mk = markers{mod(i-1, numel(markers)) + 1};
+    plot(T.xseason(inSrc), T.pk(inSrc), mk, ...
+         'LineStyle','none','Color',C(i,:), 'DisplayName',sources(i), ...
+         'MarkerSize',msz,'MarkerFaceColor',C(i,:), ...
+         'MarkerEdgeColor',[0.7 0.7 0.7],'LineWidth',0.5);
+end
+
+% ── 4. In-axes statistics table (mean ± 95% CI) ───────────────────────
+valid   = [binStats.valid];
+labels  = {binStats(valid).label};
+means   = [binStats(valid).mean];
+stds    = [binStats(valid).std];
+Nvals   = [binStats(valid).N];
+
+% 95% confidence interval: CI = 1.96*std/sqrt(N)
+ci95 = 1.96 * stds ./ sqrt(Nvals);
+
+x0  = 60;    y0 = 0.13;   dy = 0.015;
+col = [0, 30, 55, 100];  % Month | p_k | 95% CI | N
+
+text(x0+col(1), y0, 'Month', 'FontWeight', 'bold', 'FontSize', 8);
+text(x0+col(2), y0, '{\it p_k}', 'FontWeight', 'bold', 'FontSize', 8);
+text(x0+col(3), y0, '[95% CI]', 'FontWeight', 'bold', 'FontSize', 8);
+text(x0+col(4), y0, 'N', 'FontWeight', 'bold', 'FontSize', 8);
+
+for i = 1:numel(labels)
+    y = y0 - i*dy;
+
+    % Compute 95% CI
+    lb = max(means(i) - ci95(i), 0);  % force lower bound ≥ 0
+    ub = max(means(i) + ci95(i), 0);  % optional, usually already >0
+
+    if abs(lb) < 1e-3, lb = 0; end
+    if abs(ub) < 1e-3, ub = 0; end
+
+    % Print table entries
+    text(x0+col(1), y, labels{i}, 'FontSize', 8);
+    dispMean = means(i);
+    if abs(dispMean) < 1e-3, dispMean = 0; end
+    text(x0+col(2), y, sprintf('%.2f', dispMean), 'FontSize', 8);
+    text(x0+col(3), y, sprintf('[%.2f %.2f]', lb, ub), 'FontSize', 8);
+    text(x0+col(4), y, sprintf('%d', Nvals(i)), 'FontSize', 8);
+end
+
+tTicks = [datetime(2019,9:12,1), datetime(2020,1:9,1)];
+xTicks = days(tTicks - t0);
+
+xticks(xTicks)
+xticklabels({'Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'})
+xlim([0 days(datetime(2020,9,1)-t0)])
+ylim([-0.02 0.35])
+
+xlabel('Seasonal day')
+ylabel('Keel macroporosity, {\it p_k}')
+leg = legend('Location','northwest','NumColumns',2,'FontSize',7,'Box','off');
+leg.ItemTokenSize = [30*0.25, 18*0.2];
+
+fig.Units    = 'inches';
+fig.Position = [3 3 8 5];
+
+exportgraphics(fig, 'Historical_keel_porosity.png','Resolution',300);
+
 %% Figure 2: keel porosity vs time
 fig = figure; hold on; box on
 
 % ── 0. Reference line ────────────────────────────────────────────────────────
-yline(0, '--', 'Color', [0.8 0.8 0.8], 'LineWidth', 1, 'HandleVisibility', 'off');
+% yline(0, '--', 'Color', [0.8 0.8 0.8], 'LineWidth', 1, 'HandleVisibility', 'off');
 
 % ── 1. Compute per-bin statistics (single pass; reused for plot + table) ─────
 t0 = datetime(2019,seasonStartMonth,seasonStartDay);

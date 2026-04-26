@@ -129,6 +129,7 @@ hc = [2.02 2.82 1.64 1.36 1.84 1.85 1.33 1.73 1.92];  % consolidated layer thick
 pk = [0.05 0.02 0.01 0.03 0.06 0.05 0.02 0.08 0.12];  % keel macroporosity
 pr = [0.31 0.22 0.20 0.27 0.34 0.31 0.19 0.38 0.51];  % rubble porosity
 hk = 0.59 * [5.1 5.1 5.1 6.7 6.7 6.7 6.8 6.8 6.8];    % max keel depth per ridge + Hk_avg = 0.59 Hk_max (Strub-Klein & Sudom, 2012)
+pk = pr .* (hk - hc) ./ hk;  % keel-average porosity (Estimated as reported keel porosity seems too low)
 
 T = addData(T,t,pk,hk,pr,meta);
 
@@ -354,7 +355,7 @@ figParam.Position = [3 3 10.5 4.5];
 
 % exportgraphics(figParam,'Historical_keel_porosity_parameterization_lines.png','Resolution',300);
 
-%% Figure 2: kee porosity vs time
+%% Figure 2: keel porosity vs time
 fig = figure; hold on; box on
 
 % ── 0. Reference line ────────────────────────────────────────────────────────
@@ -470,7 +471,7 @@ leg.ItemTokenSize = [30*0.25, 18*0.2];
 
 fig.Units    = 'inches';
 fig.Position = [3 3 8 5];
-% exportgraphics(fig, 'Historical_keel_porosity.png', 'Resolution', 300);
+exportgraphics(fig, 'Historical_keel_porosity.png', 'Resolution', 300);
 
 %% Figure 3: Porosity vs time and keel depth
 % Seasonal day

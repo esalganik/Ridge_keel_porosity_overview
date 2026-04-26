@@ -21,29 +21,30 @@ This MATLAB script compiles published observations of **sea-ice ridge keel macro
 - Observation dates are transformed into a **normalized seasonal coordinate** (“seasonal day”), referenced to a fixed ice-season start (default: 15 August)
 
 - Data are grouped into predefined seasonal bins, and for each bin:
-  - Median pₖ  
-  - Interquartile range (IQR)
+  - Mean pₖ  
+  - 95% confidence interval (CI)  
   - Number of observations (N)
     
 - Results are visualized as:
   - Scatter points grouped by source  
-  - Horizontal median lines  
-  - Shaded IQR envelopes  
-  - Embedded table of monthly statistics (median, IQR, and sample size N)
+  - Horizontal mean lines  
+  - Shaded ±1σ envelopes (optional)  
+  - Embedded table of monthly statistics (mean, 95% CI, and sample size N)
 
 ### Output
 
 - Figure showing:
   - Multi-source observations of keel porosity
-  - Seasonal median trend with variability (IQR)
-  - In-figure summary table
-
+  - Seasonal mean trend with variability (95% CI)
+  - In-figure summary table showing mean ± 95% CI per month
+  
 ## Data sources
 
 - Høyland (2002), Cold Regions Sci. Technol. — https://doi.org/10.1016/S0165-232X(02)00002-2  
 - Bonnemaire et al. (2003), POAC — https://poac.com/PapersOnline.html  
 - Kharitonov (2005), POAC — https://poac.com/PapersOnline.html  
 - Kharitonov & Morev (2005), POAC — https://poac.com/PapersOnline.html  
+- Høyland (2007), J. Geophys. Res. — https://doi.org/10.1029/2000JC000526  
 - Strub-Klein et al. (2009), POAC — https://poac.com/PapersOnline.html  
 - Kharitonov (2012), Cold Regions Sci. Technol. — https://doi.org/10.1016/j.coldregions.2012.05.018  
 - Sand et al. (2015), POAC — https://poac.com/PapersOnline.html  
